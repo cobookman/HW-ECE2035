@@ -1,4 +1,4 @@
-/* 25 January 2013	               <your name goes here>
+/* 25 January 2013	               Colin Bookman
 
 ECE 2035 Homework 1-2
 
