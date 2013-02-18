@@ -3,7 +3,7 @@
 
 /* Protypes */
 int getIndex(int row, int col, int dir, int * numCols); /* row, col, dir #[0(N), 1(S),2(E),3(W)]*/
-int recursiveSolve(int * backup, int * puzzle, int col, int row, int * numCols, int * numRows, int * solution);
+int loopSolve(int * backup, int * puzzle, int col, int row, int * numCols, int * numRows, int * solution);
 int checkTile(int row, int col, int * numCols, int * puzzle, int * solution);
 void rotate90(int row, int col, int *puzzle, int *numCols);
 
@@ -38,18 +38,15 @@ void solver(int row_size, int column_size, int num_color, int *packed_puzzle, in
         }
     }
     /* Launch the recursive solve */
-    recursiveSolve(backup, puzzle, 0, 0, &column_size, &row_size, solution);
+    loopSolve(backup, puzzle, 0, 0, &column_size, &row_size, solution);
     /* Finished Sorting */
 }
 
 
-int recursiveSolve(int * backup, int * puzzle, int col, int row, int * numCols, int * numRows, int * solution) {
-    /* Check if we're at the end of a row, or we've solved for every row*/
-    if(row==(*numRows)) {
-        return DONE;
-    } 
-    /* Try and rotate tile so that left/up is a match
-                !!!!!!!!!IMPORTANT!!!!!!!!!
+int loopSolve(int * backup, int * puzzle, int col, int row, int * numCols, int * numRows, int * solution) {
+   while(row!=(*numRows)) {
+
+       /*         !!!!!!!!!IMPORTANT!!!!!!!!!
        if solution[row*col]>3, a FALSE is returned.  
        This is done to tell theq program that an cell to the right/top 
        needs to be rotated as this one has  done a full rotation already.   */
@@ -75,13 +72,13 @@ int recursiveSolve(int * backup, int * puzzle, int col, int row, int * numCols, 
             }
         /* Check if we need to go up a row, or back a cell */
         if(col==0) { col=((*numCols)-1); --row; } else { --col; }
-        return recursiveSolve(backup, puzzle, col, row, numCols, numRows, solution); 
 
     /* Go to next cell*/
     } else { 
         if((col+1)==(*numCols)) { col=0; ++row; } else { ++col; }
-        return recursiveSolve(backup, puzzle, col, row, numCols, numRows, solution); 
     }
+  }
+  return DONE;
 }
 /**********************************************
  * Checks to the left, and up if colors match *
