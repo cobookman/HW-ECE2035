@@ -71,6 +71,6 @@ findMedian: addi $2, $0, 49
             lw   $3, Array($3) #R3 = Array(50)
             add  $2, $2, $3    #R2 = Array(49) + Array(50)
             addi $3, $0, 2     #R3 = 2
-            sra  $2, $2, 1      #R2 = [Array(49) + Array(50)]/2
+            sra $2, $2, 1   #R2 = FLOOR([Array(49) + Array(50)]/2)
 
 jr	$31			# otherwise return to caller
