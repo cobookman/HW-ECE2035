@@ -3,7 +3,7 @@
 
 /* Protypes */
 int getIndex(int row, int col, int dir, int * numCols); /* row, col, dir #[0(N), 1(S),2(E),3(W)]*/
-int solve(int * backup, int * puzzle, int col, int row, int * numCols, int * numRows, int * solution);
+int recursiveSolve(int * backup, int * puzzle, int col, int row, int * numCols, int * numRows, int * solution);
 int checkTile(int row, int col, int * numCols, int * puzzle, int * solution);
 void rotate90(int row, int col, int *puzzle, int *numCols);
 
@@ -38,16 +38,12 @@ void solver(int row_size, int column_size, int num_color, int *packed_puzzle, in
         }
     }
     /* Launch the recursive solve */
-    int isSolution=-1;
-    isSolution = solve(backup, puzzle, 0, 0, &column_size, &row_size, solution);
-    
-    /* solve the puzzle now, and put the solution in 'solution' */
-    /* EX: solution[3] = 3*/
-    
+    recursiveSolve(backup, puzzle, 0, 0, &column_size, &row_size, solution);
+    /* Finished Sorting */
 }
 
 
-int solve(int * backup, int * puzzle, int col, int row, int * numCols, int * numRows, int * solution) {
+int recursiveSolve(int * backup, int * puzzle, int col, int row, int * numCols, int * numRows, int * solution) {
     /* Check if we're at the end of a row, or we've solved for every row*/
     if(row==(*numRows)) {
         return DONE;
@@ -79,13 +75,12 @@ int solve(int * backup, int * puzzle, int col, int row, int * numCols, int * num
             }
         /* Check if we need to go up a row, or back a cell */
         if(col==0) { col=((*numCols)-1); --row; } else { --col; }
-        /* TODO Reset, puzzle for this cell and all which are to the right*/
-        return solve(backup, puzzle, col, row, numCols, numRows, solution); 
+        return recursiveSolve(backup, puzzle, col, row, numCols, numRows, solution); 
 
     /* Go to next cell*/
     } else { 
         if((col+1)==(*numCols)) { col=0; ++row; } else { ++col; }
-        return solve(backup, puzzle, col, row, numCols, numRows, solution); 
+        return recursiveSolve(backup, puzzle, col, row, numCols, numRows, solution); 
     }
 }
 /**********************************************
@@ -99,6 +94,7 @@ int checkTile(int row, int col, int * numCols, int * puzzle, int * solution) {
         if(solution[row*(*numCols) + col]>3) { return INVALID; } 
         int matchTop  = INVALID; 
         int matchLeft = INVALID;
+
       /* Rotate 90 Clockwise by default */
         rotate90(row, col, puzzle, numCols);
         ++solution[row*(*numCols) + col];
@@ -107,18 +103,13 @@ int checkTile(int row, int col, int * numCols, int * puzzle, int * solution) {
         if(row==0) { 
             matchTop=1; 
         } else if(puzzle[getIndex(row, col, 0, numCols)] == puzzle[getIndex((row-1), col, 2, numCols)]) {
-            /* puzzle[row, col, N] == puzzle[row+1, col, S] */
             matchTop=1;
         }
-    /*    printf("\nRow: %d, Col: %d", row, col);
-        printf("\nTop: %d",puzzle[getIndex(row, col, 0, numCols)]);
-        printf("\nBot: %d",puzzle[getIndex((row-1), col, 2, numCols)]);*/
 
       /* Check if the left has a match */
         if(col==0) {
             matchLeft=1;
         } else if(puzzle[getIndex(row, col, 3, numCols)] == puzzle[getIndex(row, (col-1), 1, numCols)]) {
-            /*puzzle[row,col, W] == puzzle[row, col-1, E]*/
             matchLeft=1;
         }
       /* Check if its a match, else rotate */
