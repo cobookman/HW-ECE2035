@@ -88,10 +88,7 @@ int recursiveSolve(int * backup, int * puzzle, int col, int row, int * numCols, 
  *    - rotates, and returns a true/false     *
  **********************************************/
 int checkTile(int row, int col, int * numCols, int * puzzle, int * solution) {
-    int isMatched = INVALID;
-    do {
-      /* Check if we're about to do a 'full rotation' (saves time by having this twice)*/
-        if(solution[row*(*numCols) + col]>3) { return INVALID; } 
+    while(solution[row*(*numCols)+col]<4) { /*Don't rotate tile more than 360 */
         int matchTop  = INVALID; 
         int matchLeft = INVALID;
 
@@ -114,11 +111,10 @@ int checkTile(int row, int col, int * numCols, int * puzzle, int * solution) {
         }
       /* Check if its a match, else rotate */
         if(matchTop==1 && matchLeft==1) { 
-            isMatched = VALID; 
             return VALID; 
         }
-    } while(!isMatched);
-    return VALID;
+    }
+    return INVALID; /* Rotated around 4 times, invalid */
 }
 
 /*********************************
