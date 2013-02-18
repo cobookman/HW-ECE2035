@@ -15,34 +15,34 @@ void rotate90(int row, int col, int *puzzle, int *numCols);
 #define ERROR     -1;
 
 void solver(int row_size, int column_size, int num_color, int *packed_puzzle, int * solution) {
-	int i, j;
-	int *puzzle, *backup;
-	/* In the following example, the puzzle is a row*(column*4) array, where the puzzle is laid out
-	 in the following order: N, E, S, W of (1,1), N, E, S, W of (1, 2), ... , the next row, ... */
-	
-	/* It's perfectly fine if you choose a different data layout. */
-	puzzle = (int *)malloc( sizeof(int) * row_size * column_size * 4);
-	backup = (int *)malloc( sizeof(int) * row_size * column_size * 4);
+    int i, j;
+    int *puzzle, *backup;
+    /* In the following example, the puzzle is a row*(column*4) array, where the puzzle is laid out
+     in the following order: N, E, S, W of (1,1), N, E, S, W of (1, 2), ... , the next row, ... */
+    
+    /* It's perfectly fine if you choose a different data layout. */
+    puzzle = (int *)malloc( sizeof(int) * row_size * column_size * 4);
+    backup = (int *)malloc( sizeof(int) * row_size * column_size * 4);
 
-	for(i=0;i<row_size;i++) {
-		for(j=0;j<column_size;j++) {
-			puzzle[(i*column_size+j)*4+1] = (packed_puzzle[i*column_size+j] & 0xff) ;
-			puzzle[(i*column_size+j)*4+2] = (packed_puzzle[i*column_size+j] & 0xff00) >> 8;
-			puzzle[(i*column_size+j)*4+3] = (packed_puzzle[i*column_size+j] & 0xff0000) >> 16;
-			puzzle[(i*column_size+j)*4] = (packed_puzzle[i*column_size+j] & 0xff000000) >> 24;
+    for(i=0;i<row_size;i++) {
+        for(j=0;j<column_size;j++) {
+            puzzle[(i*column_size+j)*4+1] = (packed_puzzle[i*column_size+j] & 0xff) ;
+            puzzle[(i*column_size+j)*4+2] = (packed_puzzle[i*column_size+j] & 0xff00) >> 8;
+            puzzle[(i*column_size+j)*4+3] = (packed_puzzle[i*column_size+j] & 0xff0000) >> 16;
+            puzzle[(i*column_size+j)*4] = (packed_puzzle[i*column_size+j] & 0xff000000) >> 24;
             /* Create a backup array - TODO make more efficient */
             backup[(i*column_size+j)*4+1] = puzzle[(i*column_size+j)*4+1];
             backup[(i*column_size+j)*4+2] = puzzle[(i*column_size+j)*4+2];
             backup[(i*column_size+j)*4+3] = puzzle[(i*column_size+j)*4+3];
             backup[(i*column_size+j)*4] = puzzle[(i*column_size+j)*4];
-		}
-	}
+        }
+    }
     /* Launch the recursive solve */
     int isSolution=-1;
     isSolution = solve(backup, puzzle, 0, 0, &column_size, &row_size, solution);
     
     /* solve the puzzle now, and put the solution in 'solution' */
-	/* EX: solution[3] = 3*/
+    /* EX: solution[3] = 3*/
     
 }
 
