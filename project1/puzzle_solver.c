@@ -30,7 +30,7 @@ void solver(int row_size, int column_size, int num_color, int *packed_puzzle, in
             puzzle[(i*column_size+j)*4+2] = (packed_puzzle[i*column_size+j] & 0xff00) >> 8;
             puzzle[(i*column_size+j)*4+3] = (packed_puzzle[i*column_size+j] & 0xff0000) >> 16;
             puzzle[(i*column_size+j)*4] = (packed_puzzle[i*column_size+j] & 0xff000000) >> 24;
-            /* Create a backup array - TODO make more efficient */
+            /* Create a backup array */
             backup[(i*column_size+j)*4+1] = puzzle[(i*column_size+j)*4+1];
             backup[(i*column_size+j)*4+2] = puzzle[(i*column_size+j)*4+2];
             backup[(i*column_size+j)*4+3] = puzzle[(i*column_size+j)*4+3];
@@ -52,24 +52,17 @@ int loopSolve(int * backup, int * puzzle, int col, int row, int * numCols, int *
        needs to be rotated as this one has  done a full rotation already.   */
    int isMatched = checkTile(row,col, numCols, puzzle,solution);
    if(!isMatched) { /*ERROR, go back a cell*/
-
         /* send error if we're at the starting location*/
         if(col==0 && row==0) { return ERROR;  }
-        /* going back a cell, reset this cell as well as all those infront of it */
-        /* INFO - Not the best implementation, could cause slowdowns */
-            int i, j, north;
-            for(i=row; i<(*numRows); i++) {
-                for(j=col;j<(*numCols);j++) {
-                    /* Reset Puzzle*/
-                    north = getIndex(i, j, 0, numCols);
-                    puzzle[north]   = backup[north];
-                    puzzle[north+1] = backup[north+1];
-                    puzzle[north+2] = backup[north+2];
-                    puzzle[north+3] = backup[north+3];
-                    /* Reset Solution*/
-                    solution[col + row*(*numCols)]=0;
-                }
-            }
+        /* Reset Cell*/
+          int north = getIndex(row, col, 0, numCols);
+          puzzle[north]   = backup[north];
+          puzzle[north+1] = backup[north+1];
+          puzzle[north+2] = backup[north+2];
+          puzzle[north+3] = backup[north+3];
+        /* Reset Solution*/
+          solution[col + row*(*numCols)]=0;
+
         /* Check if we need to go up a row, or back a cell */
         if(col==0) { col=((*numCols)-1); --row; } else { --col; }
 
