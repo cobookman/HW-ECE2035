@@ -1,9 +1,18 @@
+/*************************************************
+ *         Author:  Colin Bookman                *
+ *       Class: ECE 2035, Spring 2013            *
+ *                                               *
+ * This program solves the puzzle by rotating    *
+ * tiles clockwise.  Each peice is selected from *
+ * top left to bottom right.  And we check for a *
+ * match left, and match up                      *
+ *************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 
 /* Protypes */
 int getIndex(int row, int col, int dir, int * numCols); /* row, col, dir #[0(N), 1(S),2(E),3(W)]*/
-int loopSolve(int * backup, int * puzzle, int col, int row, int * numCols, int * numRows, int * solution);
+int loopSolve(int * puzzle, int col, int row, int * numCols, int * numRows, int * solution);
 int checkTile(int row, int col, int * numCols, int * puzzle, int * solution);
 void rotate90(int row, int col, int *puzzle, int *numCols);
 
@@ -16,13 +25,12 @@ void rotate90(int row, int col, int *puzzle, int *numCols);
 
 void solver(int row_size, int column_size, int num_color, int *packed_puzzle, int * solution) {
     int i, j;
-    int *puzzle, *backup;
+    int *puzzle;
     /* In the following example, the puzzle is a row*(column*4) array, where the puzzle is laid out
      in the following order: N, E, S, W of (1,1), N, E, S, W of (1, 2), ... , the next row, ... */
     
     /* It's perfectly fine if you choose a different data layout. */
     puzzle = (int *)malloc( sizeof(int) * row_size * column_size * 4);
-    backup = (int *)malloc( sizeof(int) * row_size * column_size * 4);
 
     for(i=0;i<row_size;i++) {
         for(j=0;j<column_size;j++) {
@@ -30,20 +38,15 @@ void solver(int row_size, int column_size, int num_color, int *packed_puzzle, in
             puzzle[(i*column_size+j)*4+2] = (packed_puzzle[i*column_size+j] & 0xff00) >> 8;
             puzzle[(i*column_size+j)*4+3] = (packed_puzzle[i*column_size+j] & 0xff0000) >> 16;
             puzzle[(i*column_size+j)*4] = (packed_puzzle[i*column_size+j] & 0xff000000) >> 24;
-            /* Create a backup array */
-            backup[(i*column_size+j)*4+1] = puzzle[(i*column_size+j)*4+1];
-            backup[(i*column_size+j)*4+2] = puzzle[(i*column_size+j)*4+2];
-            backup[(i*column_size+j)*4+3] = puzzle[(i*column_size+j)*4+3];
-            backup[(i*column_size+j)*4] = puzzle[(i*column_size+j)*4];
         }
     }
     /* Launch the recursive solve */
-    loopSolve(backup, puzzle, 0, 0, &column_size, &row_size, solution);
+    loopSolve(puzzle, 0, 0, &column_size, &row_size, solution);
     /* Finished Sorting */
 }
 
 
-int loopSolve(int * backup, int * puzzle, int col, int row, int * numCols, int * numRows, int * solution) {
+int loopSolve(int * puzzle, int col, int row, int * numCols, int * numRows, int * solution) {
    while(row!=(*numRows)) {
 
        /*         !!!!!!!!!IMPORTANT!!!!!!!!!
@@ -52,18 +55,13 @@ int loopSolve(int * backup, int * puzzle, int col, int row, int * numCols, int *
        needs to be rotated as this one has  done a full rotation already.   */
    int isMatched = checkTile(row,col, numCols, puzzle,solution);
    if(!isMatched) { /*ERROR, go back a cell*/
-        /* send error if we're at the starting location*/
+       /* send error if we're at the starting location*/
         if(col==0 && row==0) { return ERROR;  }
-        /* Reset Cell*/
-          int north = getIndex(row, col, 0, numCols);
-          puzzle[north]   = backup[north];
-          puzzle[north+1] = backup[north+1];
-          puzzle[north+2] = backup[north+2];
-          puzzle[north+3] = backup[north+3];
-        /* Reset Solution*/
-          solution[col + row*(*numCols)]=0;
 
-        /* Check if we need to go up a row, or back a cell */
+       /* Reset Solution, as the cell was rotated 360 degrees*/
+          solution[col + row*(*numCols)]=0;
+          
+       /* Check if we need to go up a row, or back a cell */
         if(col==0) { col=((*numCols)-1); --row; } else { --col; }
 
     /* Go to next cell*/
