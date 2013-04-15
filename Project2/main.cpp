@@ -1,5 +1,6 @@
 /**********************************
  * Author: Clifton Thomas
+ * AI and 7 Seg Hex Modifications: Colin Bookman
  * Date: 3/28/13
  * Institution: Georgia Tech
  *
